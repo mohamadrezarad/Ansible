@@ -1,4 +1,4 @@
-````markdown
+```markdown
 # Ansible Automates Setup Load Balancer and Web Application
 
 This repository contains an Ansible project that automates the setup of a Nginx as a load balancer and two WordPress websites, each connecting to a MariaDB database. The setup is intended for a test environment and uses predefined IP addresses.
@@ -109,4 +109,4 @@ When contributing, please adhere to the existing code style and structure, and p
 
 This project is licensed under the [MIT License](LICENSE).
 
-````
+```
