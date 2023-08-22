@@ -28,25 +28,31 @@ Before using this Ansible project, ensure you have the following prerequisites:
 
 ## Usage
 
-1. Clone this repository to your local machine:
+Clone this repository to your local machine:
 
-   git clone https://github.com/mohamadrezarad/Ansible.git
+```sh
+git clone <https://github.com/mohamadrezarad/Ansible.git>
+```
 
-2. Navigate to the project directory:
+1. Navigate to the project directory:
 
+   ```sh
    cd rad_com
+   ```
 
-3. Open the `inventory/main.ini` file and replace the example IP addresses with your target environment's IP addresses.
+2. Open the `inventory/main.ini` file and replace the example IP addresses with your target environment's IP addresses.
 
-4. Review and customize the roles under the `roles` directory as needed for your environment.
+3. Review and customize the roles under the `roles` directory as needed for your environment.
 
-5. Run the Ansible playbook:
+4. Run the Ansible playbook:
 
+   ```sh
    ansible-playbook playbook/all.yml
+   ```
 
-6. The playbook will automate the setup of the load balancer, WordPress sites, and MariaDB. Monitor the output for any errors.
+5. The playbook will automate the setup of the load balancer, WordPress sites, and MariaDB. Monitor the output for any errors.
 
-7. After the playbook completes, access the load balancer IP in your web browser to see the WordPress websites in action.
+6. After the playbook completes, access the load balancer IP in your web browser to see the WordPress websites in action.
 
 ## Contributing
 
