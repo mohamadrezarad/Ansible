@@ -1,0 +1,9 @@
+---
+
+WP_INSTANCES:
+  - name: rad.com
+    db: rad_com
+    db_user: admin
+    db_host: localhost 
+    db_charset: utf8
+    
