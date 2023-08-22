@@ -1,0 +1,92 @@
+- name: Ensure archive directory exists
+  file:
+    name: "{{ BACKUP_DIR }}"
+    state: directory
+
+- name: Ensure podbox-pwa compose directory exists
+  file:
+    name: "{{ TARGET_PATH }}/volumes/"
+    state: directory
+
+- name: Backup previous version
+  copy:
+    src: "{{ TARGET_PATH }}/"
+    dest: "{{ BACKUP_DIR}}/{{ ansible_date_time['date']}}"
+    remote_src: yes
+
+- name: Ensure podbox-pwa temp image directory exists
+  file:
+    name: "{{ FTP_TEMP_DIR }}"
+    state: directory
+
+- name: Ensure docker-compose is exists
+  copy:
+    src: docker-compose.yml
+    dest: "{{ TARGET_PATH }}"
+
+- name: Ensure Nginx configurations are exists
+  copy:
+    src: "{{ item }}"
+    dest: "{{ TARGET_PATH }}/volumes/"
+  with_items:
+    - default.conf
+    - nginx.conf
+
+- name: Include titan ftp credentials
+  include_vars: titan_ftp_credentials.yml
+
+- name: Ensure FTP credentials are exists
+  lineinfile:
+    path: /root/.netrc
+    state: present
+    regexp: "{{ item.key }}"
+    line: "{{ item.value }}"
+    create: yes
+    mode: '0600'
+  with_items:
+    - { key: "machine", value: "machine {{ ftp_machine }}"}
+    - { key: "login", value: "login {{ ftp_username }}"}
+    - { key: "password", value: "password {{ ftp_password }}"}
+
+- name: Check whether image is updated or not
+  lineinfile:
+     create: yes
+     path: "{{ TARGET_PATH }}/.env"
+     state: present
+     regexp: "PWA_TAG*"
+     line: "PWA_TAG={{ IMAGE_TAG }}"
+  check_mode: yes
+  register: image_tag_result
+
+- name: Get podbox-pwa docker image from FTP
+  command:  lftp -c "open {{ FTP_ADDRESS }} ;set xfer:clobber on; get {{ PROJECT_FTP_PATH }}"
+  args:
+    chdir: "{{ FTP_TEMP_DIR }}"
+  register: project_ftp_result
+  when:
+    - "image_tag_result.changed"
+    - "'podbox_pwa_production' in group_names"
+
+- name: Load podbox-pwa docker image to server
+  command: docker image load -i {{ FTP_TEMP_DIR }}/{{ PROJECT_FTP_PATH }}
+  when: "project_ftp_result.changed"
+
+- name: Ensure podbox-pwa image tag is updated
+  lineinfile:
+     create: yes
+     path: "{{ TARGET_PATH }}/.env"
+     state: present
+     regexp: "PWA_TAG*"
+     line: "PWA_TAG={{ IMAGE_TAG }}"
+  when: image_tag_result.changed
+
+- name: Ensure podbox-pwa service is up
+  command: docker-compose up -d
+  args:
+    chdir: "{{ TARGET_PATH }}"
+  register: compose_update_result
+
+- name: Ensure FTP image is deleted from disk
+  file:
+    state: absent
+    path: "{{ FTP_TEMP_DIR }}/{{ PROJECT_FTP_PATH }}"

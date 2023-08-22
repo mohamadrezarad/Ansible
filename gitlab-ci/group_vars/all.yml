@@ -1,0 +1,4 @@
+TARGET_PATH: /data/app
+BACKUP_DIR: /data/archives
+FTP_ADDRESS: super.rad.com
+FTP_TEMP_DIR: /data/ftp

@@ -1,0 +1,33 @@
+---
+
+- hosts: all
+  become: true
+  roles:
+    - {role: base , tags: base }
+    - {role: add-new-user , tags: add-new-user }
+    - {role: docker , tags: docker }
+
+- hosts: businesspanel_production, businesspanel_disasters
+  become: true
+  roles:
+    - {role: businesspanel-back-front , tags: businesspanel-back-front }
+
+- hosts: activemq_chat_production,activemq_core_production
+  become: true
+  roles:
+    - {role: iptables-activemq , tags: iptables-activemq }
+
+- hosts: podium_customers_production
+  become: true
+  roles:
+    - {role: podium-customers , tags: podium-customers }
+
+- hosts: podbox_pwa_production
+  become: true
+  roles:
+    - {role: podbox-pwa , tags: podbox-pwa }
+
+- hosts: podbox_podipay_production
+  become: true
+  roles:
+    - {role: podbox-podipay , tags: podbox-podipay }

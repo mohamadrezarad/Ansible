@@ -1,0 +1,8 @@
+- name: Create a login user
+  user:
+    name: "{{ item }}"
+    password: "{{ password }}"
+    groups:
+      - appplat
+  with_items:
+      - user1
